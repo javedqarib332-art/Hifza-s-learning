@@ -753,7 +753,7 @@ const BADGES = [
 
 /* ===================== state ===================== */
 const KEY = 'clarity_state_v2';
-const defaults = () => ({name:'', xp:0, streak:0, bestStreak:0, lastDay:'', badges:[], lessons:[], quizBest:{}, quizDone:0, perfect:0,
+const defaults = () => ({name:'', salam:'', xp:0, streak:0, bestStreak:0, lastDay:'', badges:[], lessons:[], quizBest:{}, quizDone:0, perfect:0,
   gameBest:{}, gamePlays:{}, breaths:0, helper:0, worries:0, grounding:0, entries:[], moods:[], decisions:[], worryPlans:[], styleResult:''});
 function load(){ try{ const raw = localStorage.getItem(KEY); if(raw) return Object.assign(defaults(), JSON.parse(raw)); }catch(e){} return defaults(); }
 let S = load();
@@ -832,22 +832,18 @@ A.go = el => show(el.dataset.view);
 
 /* ===================== HOME ===================== */
 renderers.home = function(){
-  const hr = new Date().getHours();
-  const greet = hr < 5 ? 'Still up' : hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-  const nm = S.name ? esc(S.name) : 'friend';
   const pct = S.xp % 100;
   const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 864e5);
   const thought = THOUGHTS[doy % THOUGHTS.length];
   const gamesPlayed = Object.keys(S.gamePlays).reduce((a,k) => a + S.gamePlays[k], 0);
-  let h = '';
-  if(!S.name){
-    h += '<div class="card"><div class="eyebrow">before we begin</div><h2 class="section">What should I call you?</h2><div class="inline"><input class="field" id="nameIn" maxlength="20" placeholder="Your name"><button class="btn" data-act="saveName">Save</button></div></div>';
-  }
-  h += '<div class="card hero"><div class="eyebrow">' + greet + '</div><h1 class="title">Hi ' + nm + ', welcome to Clarity Corner</h1>' +
+  let h = '<div class="card hero"><h1 class="title">Asslamoalikum Hifza</h1><p class="muted" style="margin-bottom:10px">Welcome to Clarity Corner</p>' +
     '<p class="lead">' + esc(thought) + '</p>' +
     '<div class="muted">Level ' + level() + ' \u00B7 ' + S.xp + ' XP \u00B7 ' + (100 - pct) + ' XP to the next level</div>' +
     '<div class="xpbar"><span style="width:' + pct + '%"></span></div>' +
     '<div class="pills"><span class="pill">🔥 ' + S.streak + ' day streak</span><span class="pill">🏅 ' + S.badges.length + ' of ' + BADGES.length + ' badges</span></div></div>';
+  if(!S.salam){
+    h += '<div class="card"><h2 class="section">Salam ka jawab</h2><p class="lead">Neeche salam ka jawab likh do.</p><div class="inline"><input class="field" id="salamIn" maxlength="80" placeholder="Salam ka jawab likhein..."><button class="btn" data-act="saveSalam">Send</button></div></div>';
+  }
   h += '<div class="card"><h2 class="section">How are you feeling right now?</h2><p class="lead">Tap one and I will suggest something that fits.</p><div class="mood-row">' +
     MOODS.map(m => '<button class="mood" data-act="homeMood" data-m="' + m.k + '"><span class="me">' + m.e + '</span>' + m.n + '</button>').join('') +
     '</div><div id="moodOut"></div></div>';
@@ -866,7 +862,7 @@ renderers.home = function(){
     BADGES.map(b => '<div class="badge ' + (S.badges.includes(b.id) ? 'got' : '') + '"><div class="bi">' + b.i + '</div><b>' + b.n + '</b><span>' + b.d + '</span></div>').join('') + '</div></div>';
   $('#view-home').innerHTML = h;
 };
-A.saveName = () => { const v = $('#nameIn').value.trim(); if(!v){ toast('Type a name first'); return; } S.name = v; save(); renderers.home(); };
+A.saveSalam = () => { const v = $('#salamIn').value.trim(); if(!v){ toast('Salam ka jawab likh do'); return; } S.salam = v; save(); toast('Jazakallah'); renderers.home(); };
 A.homeMood = el => {
   const k = el.dataset.m; const sg = SUGGEST[k];
   const first = !S.moods.some(x => dayStr(new Date(x.ts)) === dayStr());
